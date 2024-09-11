@@ -1,6 +1,7 @@
 {
-  "name": "@jchacon/capacitor-pdf-viewer",
-  "version": "0.0.1",
+  "name": "@jccham/capacitor-pdf-viewer",
+  "version": "0.0.2",
+  "private": false,
   "description": "Native PDF viewer",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -12,9 +13,9 @@
     "android/build.gradle",
     "dist/",
     "ios/Plugin/",
-    "NadlowebagenturCapacitorPdfViewer.podspec"
+    "JcchamCapacitorPdfViewer.podspec"
   ],
-  "author": "codobred",
+  "author": "jesus-chacon",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -28,6 +29,9 @@
     "plugin",
     "native"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "verify": "npm run verify:ios && npm run verify:android && npm run verify:web",
     "verify:ios": "cd ios && pod install && xcodebuild -workspace Plugin.xcworkspace -scheme Plugin && cd ..",

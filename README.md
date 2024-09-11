@@ -1,11 +1,11 @@
-# @nadlowebagentur/capacitor-pdf-viewer
+# @jccham/capacitor-pdf-viewer
 
 Native PDF viewer
 
 ## Install
 
 ```bash
-npm install @nadlowebagentur/capacitor-pdf-viewer
+yarn add @jccham/capacitor-pdf-viewer
 npx cap sync
 ```
 
@@ -13,8 +13,8 @@ npx cap sync
 
 <docgen-index>
 
-* [`open(...)`](#open)
-* [`close()`](#close)
+- [`open(...)`](#open)
+- [`close()`](#close)
 
 </docgen-index>
 
@@ -31,8 +31,7 @@ open(params: { url: string; title?: string; top?: number; }) => Promise<void>
 | ------------ | ----------------------------------------------------------- |
 | **`params`** | <code>{ url: string; title?: string; top?: number; }</code> |
 
---------------------
-
+---
 
 ### close()
 
@@ -40,6 +39,6 @@ open(params: { url: string; title?: string; top?: number; }) => Promise<void>
 close() => Promise<void>
 ```
 
---------------------
+---
 
 </docgen-api>

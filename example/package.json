@@ -16,7 +16,7 @@
     "@capacitor/core": "latest",
     "@capacitor/camera": "latest",
     "@capacitor/splash-screen": "latest",
-    "@nadlowebagentur/capacitor-pdf-viewer": "file:.."
+    "@jccham/capacitor-pdf-viewer": "file:.."
   },
   "devDependencies": {
     "@capacitor/cli": "latest",
