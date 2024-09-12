@@ -7,12 +7,12 @@ import com.getcapacitor.PluginCall
 import androidx.fragment.app.FragmentManager
 import com.getcapacitor.PluginMethod
 
-@CapacitorPlugin(name = "PdfViewerPlugin")
+@CapacitorPlugin(name = "PDFViewer")
 class PdfViewerPlugin : Plugin() {
     private var pdfFragment: PdfViewerFragment? = null
 
     @PluginMethod
-    fun loadPdf(call: PluginCall) {
+    fun open(call: PluginCall) {
         val pdfUrl = call.getString("url") ?: return call.reject("URL is required")
         val top = call.getInt("top", 0) ?: return call.reject("URL is required")
 

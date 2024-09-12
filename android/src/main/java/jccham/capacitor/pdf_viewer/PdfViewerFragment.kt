@@ -1,32 +1,36 @@
 package jccham.capacitor.pdf_viewer
+
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.LinearLayout
+import android.widget.ProgressBar
+import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.rajat.pdfviewer.PdfRendererView
-import com.rajat.pdfviewer.HeaderData
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancel
+import com.rajat.pdfviewer.databinding.ActivityPdfViewerBinding;
 
 class PdfViewerFragment : Fragment() {
 
     private lateinit var pdfUrl: String
     private var top: Int = 0
-    private val job = SupervisorJob()
-    private val coroutineScope = CoroutineScope(Dispatchers.Main + job)
+    private var _binding: ActivityPdfViewerBinding? = null
+    private val binding get() = _binding!!
 
     companion object {
         fun newInstance(pdfUrl: String, top: Int): PdfViewerFragment {
             val fragment = PdfViewerFragment()
             val args = Bundle()
+
             args.putString("pdfUrl", pdfUrl)
             args.putInt("top", top)
+
             fragment.arguments = args
+
             return fragment
         }
     }
@@ -34,13 +38,29 @@ class PdfViewerFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
+        _binding = ActivityPdfViewerBinding.inflate(inflater, container, false)
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)  {
+        super.onViewCreated(view, savedInstanceState);
+
+        Log.d("PDFViewerFragment", "Showing progress indicator")
+
         arguments?.let {
             pdfUrl = it.getString("pdfUrl").orEmpty()
             top = it.getInt("top", 0)
         }
 
-        // Crear el FrameLayout principal
+        Log.d("PDFViewerFragment", "PDF $pdfUrl");
+        Log.d("PDFViewerFragment", "TOP $top");
+
+        binding.progressBar.visibility = View.VISIBLE;
+        binding.pdfView.visibility = View.GONE;
+
+        //Crear el FrameLayout principal
         val rootLayout = FrameLayout(requireContext()).apply {
             layoutParams = FrameLayout.LayoutParams(
                 FrameLayout.LayoutParams.MATCH_PARENT,
@@ -48,29 +68,49 @@ class PdfViewerFragment : Fragment() {
             )
         }
 
-        // Crear el PdfRendererView para mostrar el PDF
-        val pdfRendererView = PdfRendererView(requireContext()).apply {
-            rootLayout.addView(this)
+        binding.pdfView.statusListener = object : PdfRendererView.StatusCallBack {
+            override fun onPdfLoadStart() {
+                Log.i("statusCallBack","onPdfLoadStart")
+            }
+            override fun onPdfLoadProgress(
+                progress: Int,
+                downloadedBytes: Long,
+                totalBytes: Long?
+            ) {
+                //Download is in progress
+            }
+
+            override fun onPdfLoadSuccess(absolutePath: String) {
+                Log.i("statusCallBack","onPdfLoadSuccess")
+
+                binding.progressBar.visibility  = View.GONE;
+                binding.pdfView.visibility = View.VISIBLE;
+            }
+
+            override fun onError(error: Throwable) {
+                Log.i("statusCallBack","onError")
+            }
+
+            override fun onPageChanged(currentPage: Int, totalPage: Int) {
+                //Page change. Not require
+            }
         }
 
         // Inicializar la vista PDF con la URL usando el método initWithUrl
-        pdfRendererView.initWithUrl(
-            pdfUrl,
-            HeaderData(), // Puedes personalizar los headers aquí si es necesario
+        binding.pdfView.initWithUrl(
+            url = pdfUrl,
             lifecycleCoroutineScope = lifecycleScope, // Pasamos el LifecycleCoroutineScope correcto
             lifecycle = lifecycle // Pasamos el ciclo de vida del fragmento
         )
 
-        // Aplicar el margen superior dinámico al layout completo
-        val params = rootLayout.layoutParams as ViewGroup.MarginLayoutParams
-        params.topMargin = top
-        rootLayout.layoutParams = params
 
-        return rootLayout
+        val params = binding.parentLayout.layoutParams as ViewGroup.MarginLayoutParams
+        params.topMargin = top
+        binding.pdfView.layoutParams = params
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        coroutineScope.cancel() // Cancelar el Job cuando el fragmento se destruya
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
