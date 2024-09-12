@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 import androidx.core.view.marginTop
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -39,6 +41,8 @@ class PdfViewerFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        super.onCreateView(inflater, container, savedInstanceState);
+
         _binding = ActivityPdfViewerBinding.inflate(inflater, container, false)
 
         return binding.root
@@ -60,39 +64,12 @@ class PdfViewerFragment : Fragment() {
         binding.progressBar.visibility = View.VISIBLE;
         binding.pdfView.visibility = View.GONE;
 
-        //Crear el FrameLayout principal
-        val rootLayout = FrameLayout(requireContext()).apply {
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT,
-                FrameLayout.LayoutParams.MATCH_PARENT
-            )
-        }
-
         binding.pdfView.statusListener = object : PdfRendererView.StatusCallBack {
-            override fun onPdfLoadStart() {
-                Log.i("statusCallBack","onPdfLoadStart")
-            }
-            override fun onPdfLoadProgress(
-                progress: Int,
-                downloadedBytes: Long,
-                totalBytes: Long?
-            ) {
-                //Download is in progress
-            }
-
             override fun onPdfLoadSuccess(absolutePath: String) {
                 Log.i("statusCallBack","onPdfLoadSuccess")
 
                 binding.progressBar.visibility  = View.GONE;
                 binding.pdfView.visibility = View.VISIBLE;
-            }
-
-            override fun onError(error: Throwable) {
-                Log.i("statusCallBack","onError")
-            }
-
-            override fun onPageChanged(currentPage: Int, totalPage: Int) {
-                //Page change. Not require
             }
         }
 
@@ -103,10 +80,13 @@ class PdfViewerFragment : Fragment() {
             lifecycle = lifecycle // Pasamos el ciclo de vida del fragmento
         )
 
-
         val params = binding.parentLayout.layoutParams as ViewGroup.MarginLayoutParams
         params.topMargin = top
-        binding.pdfView.layoutParams = params
+
+        binding.parentLayout.layoutParams = params
+        val pdfRendererView = binding.pdfView
+
+        binding.myToolbar.visibility = View.GONE
     }
 
     override fun onDestroyView() {
