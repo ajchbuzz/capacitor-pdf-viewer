@@ -1,6 +1,6 @@
 {
   "name": "@jccham/capacitor-pdf-viewer",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": false,
   "description": "Native PDF viewer",
   "main": "dist/plugin.cjs.js",
@@ -60,7 +60,7 @@
     "prettier": "~3.3.3",
     "prettier-plugin-java": "~2.6.4",
     "rimraf": "^6.0.1",
-    "rollup": "^4.21.2",
+    "rollup": "^4.21.3",
     "swiftlint": "^1.0.2",
     "typescript": "~4.0.3"
   },
