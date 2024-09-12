@@ -1,4 +1,4 @@
-package ch.nadlo.oss.capacitor.pdf_viewer;
+package jccham.capacitor.pdf_viewer;
 
 import android.app.Activity;
 

@@ -19,7 +19,7 @@ buildscript {
 apply plugin: 'com.android.library'
 
 android {
-    namespace "ch.nadlo.oss.capacitor.pdf_viewer"
+    namespace "jccham.capacitor.pdf_viewer"
     compileSdkVersion project.hasProperty('compileSdkVersion') ? rootProject.ext.compileSdkVersion : 33
     defaultConfig {
         minSdkVersion project.hasProperty('minSdkVersion') ? rootProject.ext.minSdkVersion : 22
@@ -57,5 +57,5 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
-    implementation 'com.github.mhiew:android-pdf-viewer:3.2.0-beta.3'
+    implementation 'io.github.afreakyelf:Pdf-Viewer:2.1.1'
 }

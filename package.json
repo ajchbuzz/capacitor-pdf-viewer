@@ -1,6 +1,6 @@
 {
   "name": "@jccham/capacitor-pdf-viewer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": false,
   "description": "Native PDF viewer",
   "main": "dist/plugin.cjs.js",

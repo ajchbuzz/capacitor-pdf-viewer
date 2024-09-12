@@ -1,13 +1,14 @@
-package ch.nadlo.oss.capacitor.pdf_viewer;
+package jccham.capacitor.pdf_viewer;
 
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,16 +24,16 @@ import java.util.concurrent.Executors;
 
 public class PdfViewerFragment extends Fragment {
 
-    private String url;
-    private Integer top;
+    private String pdfUrl;
+    private int topMargin;
     private ExecutorService executorService = Executors.newFixedThreadPool(1);
 
     // Método para crear una nueva instancia del fragmento con parámetros
-    public static PdfViewerFragment newInstance(String url, int top) {
+    public static PdfViewerFragment newInstance(String pdfUrl, int topMargin) {
         PdfViewerFragment fragment = new PdfViewerFragment();
         Bundle args = new Bundle();
-        args.putString("url", url);
-        args.putInt("top", top);
+        args.putString("pdfUrl", pdfUrl);
+        args.putInt("topMargin", topMargin);
         fragment.setArguments(args);
         return fragment;
     }
@@ -40,42 +41,52 @@ public class PdfViewerFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // Inflar el layout del fragmento
-        return inflater.inflate(R.layout.pdf_rendererview, container, false);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
         if (getArguments() != null) {
-            url = getArguments().getString("url");
-            top = getArguments().getInt("top");
+            pdfUrl = getArguments().getString("pdfUrl");
+            topMargin = getArguments().getInt("topMargin", 0); // Valor predeterminado 0 si no se pasa
         }
 
-        // Configurar PDFView
-        PDFView pdfView = view.findViewById(R.id.pdfView);
-        ProgressBar progressBar = view.findViewById(R.id.progressBar);
+        // Crear el FrameLayout principal
+        FrameLayout rootLayout = new FrameLayout(requireContext());
+        rootLayout.setLayoutParams(new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT));
+
+        // Crear la barra de progreso centrada verticalmente
+        ProgressBar progressBar = new ProgressBar(requireContext(), null, android.R.attr.progressBarStyleLarge);
+        FrameLayout.LayoutParams progressParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT);
+        progressParams.gravity = Gravity.CENTER;
+        progressBar.setLayoutParams(progressParams);
+        rootLayout.addView(progressBar);
+
+        // Crear el PDFView usando la nueva librería
+        PDFView pdfView = new PDFView(requireContext(), null);
+        pdfView.setVisibility(View.GONE); // Inicialmente oculto
+        rootLayout.addView(pdfView);
 
         // Descargar y cargar el PDF en segundo plano
         executorService.execute(() -> {
-            InputStream inputStream = getPdfInputStream(url);
+            InputStream inputStream = getPdfInputStream(pdfUrl);
             if (inputStream != null) {
                 requireActivity().runOnUiThread(() -> {
+                    // Ocultar la barra de progreso y mostrar el PDF
                     progressBar.setVisibility(View.GONE);
                     pdfView.setVisibility(View.VISIBLE);
 
+                    // Cargar el PDF directamente desde el InputStream
                     pdfView.fromStream(inputStream).load();
                 });
             }
         });
 
-        // Aplicar el margen superior al layout completo del fragmento
-        LinearLayout layout = (LinearLayout) view.findViewById(R.id.pdfLayout); // El LinearLayout del fragmento
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) layout.getLayoutParams();
+        // Aplicar el margen superior dinámico al layout completo
+        MarginLayoutParams params = (MarginLayoutParams) rootLayout.getLayoutParams();
+        params.topMargin = topMargin; // Aplicar el margen superior dinámico
+        rootLayout.setLayoutParams(params); // Actualizar el layout con los nuevos parámetros
 
-        params.topMargin = top; // Aplicar el margen superior dinámico
-        layout.setLayoutParams(params); // Actualizar el layout con los nuevos parámetros
+        return rootLayout;
     }
 
     // Método para obtener InputStream desde una URL
@@ -94,4 +105,3 @@ public class PdfViewerFragment extends Fragment {
         return null;
     }
 }
-
